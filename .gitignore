@@ -1,0 +1,85 @@
+# =========================================
+# Python
+# =========================================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+.virtualenv/
+
+# Pipenv / Poetry
+Pipfile.lock
+poetry.lock
+
+# =========================================
+# Django
+# =========================================
+*.log
+*.pot
+*.pyc
+*.pyo
+*.mo
+
+# Django local settings
+/local_settings.py
+/settings_local.py
+
+# SQLite database
+db.sqlite3
+db.sqlite3-journal
+
+# Static & media (generated files)
+staticfiles/
+static/
+media/
+
+# Django migrations (optional: ignore if you want clean repo before initial migrate)
+# Comment the next line if you want to track migrations
+# */migrations/*.py
+# !*/migrations/__init__.py
+
+# =========================================
+# Environment variables
+# =========================================
+*.env
+.env.*
+!example.env
+
+# =========================================
+# IDEs & editors
+# =========================================
+# VS Code
+.vscode/
+
+# PyCharm / JetBrains
+.idea/
+*.iml
+
+# =========================================
+# OS files
+# =========================================
+.DS_Store
+Thumbs.db
+
+# =========================================
+# Deployment
+# =========================================
+# Gunicorn
+gunicorn.pid
+
+# Pytest / coverage
+.coverage
+.coverage.*
+htmlcov/
+dist/
+build/
+pytest_cache/
+*.egg-info/
