@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     'store',
     'tags',
+    'likes'
 ]
 import mimetypes
 mimetypes.add_type("application/javascript", ".js", True)
