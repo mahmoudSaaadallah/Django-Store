@@ -1,6 +1,27 @@
+from django.db.models import Q
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
-from store.models import Product
+from store.models import Product, OrderItem
 
 # Create your views here.
 def hello(request):
-    return render(request, 'hello.html')
+    # This will return a query set that will be lazy loaded as it will not hit the database unitl we use the query set for example in a loop or adding any imeidate function like .first()
+    # query_set = Product.objects.all()
+
+    # When using get this ORM Request will hit the database imediatly and will return a single object which has the pk = 1;
+    # we have to know that when using .get() method if there is no record in the database with pk = 1 it will throw an expception with nonexitist, so we have to hande this inside try and catch.
+    #product = Product.objects.get(pk=1)
+    try:
+        product = Product.objects.get(pk = 1)
+    except ObjectDoesNotExist:
+        pass
+    
+    # In the other soluation for the the thrown execption that .get() method will throw if the object doesn't exist is to use .filter() with .first() 
+    # .filter() will not hit the database immedatily but, we will add .first() to make sure that this request will work immedatly 
+    # .filter() will return an array of objects and if the array is empty the .first() will return none.
+    product   = Product.objects.filter(pk = 1).first()
+    # This request is more faster than the .get() request.
+
+    # queryset = Product.objects.order_by('-title')
+    queryset = OrderItem.objects.values('product__title').order_by('product__title').distinct()
+    return render(request, 'hello.html', {'produts':queryset})

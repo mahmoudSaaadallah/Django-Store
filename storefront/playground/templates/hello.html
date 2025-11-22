@@ -7,5 +7,10 @@
   </head>
   <body>
     <h1>Hello django!</h1>
+    <ul>
+      {% for product in produts %}
+      <li>{{product.product__title}}</li>
+      {% endfor %}
+    </ul>
   </body>
 </html>
