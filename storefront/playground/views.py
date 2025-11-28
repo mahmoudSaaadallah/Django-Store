@@ -1,3 +1,4 @@
+from django.db.models.aggregates import Count, Max, Min, Avg
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
@@ -47,5 +48,15 @@ def hello(request):
     # queryset = Product.objects.prefetch_related('promotion').all()
     # queryset = Order.objects.select_related('customer').prefetch_related('orderitem_set__product').order_by('placed_at')[-5:]
 
+
+    # Aggregate Functions
+    # If we use Aggregate function then this will hit the database immedatily.
+    # restult = Product.objects.aggregate(count= Count('id'), max_price = Max('unit_price'), min_price = Min('unit_price'), avg_price = Avg('unit_price'))
+
+    # Also we could use these aggregate functions with filter to make this Aggratation work for specific state
+    # For example let's get the count of the products that have been ordered more than 4 times
+    # result = Product.objects.filter(orderitem__quantity__gt = 4).aggregate(count = Count('id'))
     
-    return render(request, 'hello.html', {'produts':queryset})
+    # The max and min price of the products that has collection with id = 3
+    result = Product.objects.filter(collection_id = 3).aggregate(max_price = Max('unit_price'), min_price = Min('unit_price'))
+    return render(request, 'hello.html', {'result':result})
