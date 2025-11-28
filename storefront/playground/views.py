@@ -1,7 +1,7 @@
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
-from store.models import Product, OrderItem
+from store.models import Product, OrderItem, Order
 
 # Create your views here.
 def hello(request):
@@ -30,5 +30,22 @@ def hello(request):
     # queryset = Product.objects.only('title', 'unit_price')
 
     # .defer() is the method that will return all the columns except the one that we want to exclude.
-    queryset = Product.objects.defer('description')
+    # queryset = Product.objects.defer('description')
+
+    # If we want to get the collection of a product and used 
+    # queryset = Product.objects.all()
+    # then try to access the collection as a field of the product object.
+    # queryset.first().collection.title
+    # This will lead to N + 1 Problem as it will hit the data base with new query with each product.
+
+    # To avoid this problem we can use .select_related() method.
+    # queryset = Product.objects.select_related('collection').all()
+    # This will hit the database only once using the inner join to make sure that the collection table has been fetched.
+    # The select_related is used with one to one field or one to many relation
+
+    # But if we have a many to many relation then we have to use .prefetch_related() method.
+    # queryset = Product.objects.prefetch_related('promotion').all()
+    # queryset = Order.objects.select_related('customer').prefetch_related('orderitem_set__product').order_by('placed_at')[-5:]
+
+    
     return render(request, 'hello.html', {'produts':queryset})
