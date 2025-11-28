@@ -9,8 +9,7 @@
     <h1>Hello django!</h1>
     <ul>
       {% for product in produts %}
-      <li>{{product.product__title}}</li>
-      {% endfor %}
+      <li>{{product.title}} ====> {{product.unit_price}} {% endfor %}</li>
     </ul>
   </body>
 </html>

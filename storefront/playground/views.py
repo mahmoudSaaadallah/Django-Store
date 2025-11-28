@@ -23,5 +23,12 @@ def hello(request):
     # This request is more faster than the .get() request.
 
     # queryset = Product.objects.order_by('-title')
-    queryset = OrderItem.objects.values('product__title').order_by('product__title').distinct()
+    # queryset = OrderItem.objects.values('product__title').order_by('product__title').distinct()
+    # queryset = Product.objects.values('title', 'unit_price')
+
+    # Also we could use .only() to get specific fields from the database.
+    # queryset = Product.objects.only('title', 'unit_price')
+
+    # .defer() is the method that will return all the columns except the one that we want to exclude.
+    queryset = Product.objects.defer('description')
     return render(request, 'hello.html', {'produts':queryset})
