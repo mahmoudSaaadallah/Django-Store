@@ -1,8 +1,9 @@
 from django.db.models.aggregates import Count, Max, Min, Avg
-from django.db.models import Q
+from django.db.models import Q, F, Value, ExpressionWrapper
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import DecimalField
 from django.shortcuts import render
-from store.models import Product, OrderItem, Order
+from store.models import Collection, Product, OrderItem, Order
 
 # Create your views here.
 def hello(request):
@@ -58,5 +59,44 @@ def hello(request):
     # result = Product.objects.filter(orderitem__quantity__gt = 4).aggregate(count = Count('id'))
     
     # The max and min price of the products that has collection with id = 3
-    result = Product.objects.filter(collection_id = 3).aggregate(max_price = Max('unit_price'), min_price = Min('unit_price'))
+    # result = Product.objects.filter(collection_id = 3).aggregate(max_price = Max('unit_price'), min_price = Min('unit_price'))
+
+    # ex = ExpressionWrapper(F('unit_price') * 0.8, output_field = DecimalField())
+    # result = Product.objects.annotate(discount = ex)
+
+
+
+    # Create New Object and save it to the database
+    # collection = Collection()
+    # collection.title = 'Winter Sale'
+    # collection.featured_product = Product(pk=1)
+    # collection.save()
+    # This is the first way to add new object to the database be providing the values to variables of the object.
+
+    # The second way is by using .create()
+    # Collection.objects.create(title='Winter Sale', featured_product_id=1)
+    # This way also will save the object to the database.
+
+
+    # Update data
+    # To update a record in the database we have first specify this record using pk 
+    # collection = Collection(pk = 1)
+    # This line of code will allow us to deal with the Collection recorde with Pk=1 
+    # Now we could change the data that we want then save the object again to the database
+    # collection.title = 'Updated Title'
+    # collection.featured_product = None
+    # collection.save()
+    # Now we have to know that this type of update is a fully update which mean we have to update all the fields for the record 
+    # If we missed a field with no updates this field will take the default value, which mean it not like partail update 
+    # So if we want to update specific field from a record from the database we can't use this way 
+
+    # Instead we have to use feach the object first from the database then update the field that we want
+    # collection = Collection.objects.get(pk=1)
+    # fetching the object from the database will get the values to the field so when we call the .save() the fields that didn't changed 
+    # will keep its value.
+    # collection.featured_product = Product(pk=3)
+    # collection.save
+    # here we didn't update the title so the collection title will keep the title that stored in the database.
+    # This is how we apply the partial update.
+    
     return render(request, 'hello.html', {'result':result})
