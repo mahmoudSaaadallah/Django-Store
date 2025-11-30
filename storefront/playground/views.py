@@ -98,5 +98,12 @@ def hello(request):
     # collection.save
     # here we didn't update the title so the collection title will keep the title that stored in the database.
     # This is how we apply the partial update.
-    
-    return render(request, 'hello.html', {'result':result})
+
+    # If we want to avoid fetching the record form the database to reduce the memory useage then we could use .update() method which 
+    # work with fully update if we provide all the fields or partial update if we provide only specific filed.
+    #Collection.objects.filter(pk=1).update(title="New Title")
+    # we have to know that without using .filter() with specific condition we will update all the column in the database for all the records.
+    # So if we want to update only one record then we have to use .filter() to specify this record it's exactly like using where contation
+    # with update statement in SQL.
+
+    return render(request, 'hello.html', {'result':result}) 
