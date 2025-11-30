@@ -1,5 +1,6 @@
 from django.contrib import admin
 from . import models
+from django.db.models.aggregates import Count
 # Register your models here.
 
 # This is how to register our models in the admin site to enable us to see them in the admin site
@@ -37,3 +38,17 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = ['id', 'placed_at', 'customer__first_name']
     list_select_related = ['customer']
     ordering = ['placed_at']
+
+@admin.register(models.Collection)
+class CollectionAdmin(admin.ModelAdmin):
+    list_display = ['title', 'products_count']
+
+    # here to provide the count of hte products 
+    def products_count(self, collection):
+        return collection.products_count
+    
+    # this override the get_queryset to use Count to count the number of products for each collection.
+    def get_queryset(self, request):
+        return super().get_queryset(request).annotate(
+            products_count=Count('product')
+        )
