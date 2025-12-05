@@ -31,6 +31,7 @@ class CustomerAdmin(admin.ModelAdmin):
     list_editable = ['membership']
     list_per_page = 10
     ordering = ['first_name', 'last_name']
+    search_fields = ['first_name', 'last_name']
 
 
 @admin.register(models.Order)
@@ -38,6 +39,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = ['id', 'placed_at', 'customer__first_name']
     list_select_related = ['customer']
     ordering = ['placed_at']
+    autocomplete_fields = ['customer']
 
 @admin.register(models.Collection)
 class CollectionAdmin(admin.ModelAdmin):
