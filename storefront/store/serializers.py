@@ -4,10 +4,13 @@ from .models import Collection, Product
 
 
 
-class CollectionSerializer(serializers.Serializer):
+class CollectionSerializer(serializers.ModelSerializer):
+    products_count = serializers.SerializerMethodField('get_products_count')
+    def get_products_count(self, collection):
+        return collection.product_set.count()
     class Meta:
         model = Collection
-        fields = ['id', 'title']
+        fields = ['id', 'title','products_count']
 
 class ProductSerializer(serializers.ModelSerializer):
     # we could add a new attribute that doesn't exist in the Product model like
