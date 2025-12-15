@@ -5,12 +5,14 @@ from .models import Collection, Product
 
 
 class CollectionSerializer(serializers.ModelSerializer):
-    products_count = serializers.SerializerMethodField('get_products_count')
-    def get_products_count(self, collection):
-        return collection.product_set.count()
+    # products_count = serializers.SerializerMethodField('get_products_count')
+    # def get_products_count(self, collection):
+    #     return collection.product_set.count()
+
+    products_count = serializers.IntegerField(read_only=True)
     class Meta:
         model = Collection
-        fields = ['id', 'title','products_count']
+        fields = ['id', 'title', 'products_count']
 
 class ProductSerializer(serializers.ModelSerializer):
     # we could add a new attribute that doesn't exist in the Product model like
@@ -18,7 +20,7 @@ class ProductSerializer(serializers.ModelSerializer):
     # Here we created a new attribute with type of serializerMethod which mean it accept a method that is responsabile for getting its vale.
 
     # Also we could add a related field by different ways
-    # if we want to ge the id for the collection we could use 
+    # if we want to ge the id for the collection we could use
     # collection = serializers.PrimaryKeyRelatedField( 
     #     queryset = Collection.objects.all()
     # )

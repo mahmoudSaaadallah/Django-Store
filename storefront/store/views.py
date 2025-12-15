@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from .models import Product, Collection
 from .serializers import ProductSerializer, CollectionSerializer
+from django.db.models.aggregates import Count
 # Create your views here.
 
 @api_view(['GET', 'POST'])
@@ -37,8 +38,15 @@ def product_detail(request, pk):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 def collection_list(request):
-    queryset = Collection.objects.prefetch_related('product_set').all()
-    serializer = CollectionSerializer(queryset, many=True)
-    return Response(data=serializer.data, status=status.HTTP_200_OK)
+    if request.method == 'GET':
+        # queryset = Collection.objects.prefetch_related('product_set').all()
+        queryset = Collection.objects.annotate(products_count=Count('product')).all()
+        serializer = CollectionSerializer(queryset, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+    elif request.method == 'POST':
+        serializer = CollectionSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
