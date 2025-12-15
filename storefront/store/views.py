@@ -51,8 +51,15 @@ def collection_list(request):
             serializer.save()
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
         
-@api_view(['GET'])
+@api_view(['GET', 'PUT'])
 def collection_detail(request, pk):
     collection = get_object_or_404(Collection, pk=pk)
-    serializer = CollectionSerializer(collection)
-    return Response(data=serializer.data, status=status.HTTP_200_OK)
+    if request.method == 'GET':
+        serializer = CollectionSerializer(collection)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+    elif request.method == 'PUT':
+        serializer = CollectionSerializer(collection, data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        
