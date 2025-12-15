@@ -145,7 +145,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# fixing the retur of the decimal value in the end points.
+# fixing the return of the decimal value in the end points.
 REST_FRAMEWORK = {
     'COERCE_DECIMAL_TO_STRING':False,
 }
