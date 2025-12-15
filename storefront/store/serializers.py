@@ -20,7 +20,7 @@ class ProductSerializer(serializers.ModelSerializer):
     #     queryset = Collection.objects.all()
     # )
     # but if we want to represent the string then we could use
-    collection = serializers.StringRelatedField()
+    # collection = serializers.StringRelatedField()
     # here we have to know that without using select_related('collection') in the views.py 
     # this will case N + 1 problem.
 
@@ -29,7 +29,7 @@ class ProductSerializer(serializers.ModelSerializer):
      
     class Meta:
         model = Product
-        fields = ['id', 'title', 'unit_price', 'price_with_tax', 'collection']
+        fields = ['id', 'title', 'unit_price', 'price_with_tax', 'collection','slug', 'inventory']
     def calculate_price_with_tax(self, product):
         # Here we used Decimal Class as we can't mulitply float with decimla as the unit_price is decimal and 1.14 is float then 
         # we can't mulitply them so we have to convert 1.14 to decimal before appling the operation.

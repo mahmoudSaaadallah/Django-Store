@@ -7,14 +7,26 @@ from .models import Product
 from .serializers import ProductSerializer
 # Create your views here.
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 def product_list(request):
-    queryset = Product.objects.select_related('collection').all()
-    serializer = ProductSerializer(queryset, many=True)
-    return Response(data=serializer.data, status=status.HTTP_200_OK)
-
-@api_view(['GET'])
+    if request.method == 'GET':
+        queryset = Product.objects.select_related('collection').all()
+        serializer = ProductSerializer(queryset, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+    elif request.method == 'POST':
+        serializer = ProductSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+            
+@api_view(['GET', 'PUT'])
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
-    serializer = ProductSerializer(product)
-    return Response(data=serializer.data, status=status.HTTP_200_OK)
+    if request.method == 'GET':
+        serializer = ProductSerializer(product)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+    elif request.method == 'PUT':
+        serializer = ProductSerializer(product, data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
