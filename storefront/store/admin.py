@@ -52,5 +52,5 @@ class CollectionAdmin(admin.ModelAdmin):
     # this override the get_queryset to use Count to count the number of products for each collection.
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(
-            products_count=Count('product')
+            products_count=Count('products')
         )
