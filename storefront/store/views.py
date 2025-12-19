@@ -46,7 +46,7 @@ class CollectionList(generics.ListCreateAPIView):
     # Here we inheret from ListCreateAPIView class which inheret from generics class and some other mixinx like(mixins.ListModelMixin, mixins.CreateModelMixin).
     # generics class inherte from the APIView and this class has some Attributes(queryset, serializer_class).
     # You'll need to either set these attributes,
-    
+
     # queryset = Collection.objects.annotate(products_count=Count('products')).all()
     # serializer_class = CollectionSerializer
 
@@ -62,32 +62,22 @@ class CollectionList(generics.ListCreateAPIView):
         return CollectionSerializer
 
             
-# @api_view(['GET', 'POST'])
-# def collection_list(request):
+class CollectionDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Collection.objects.annotate(products_count=Count('products')).all()
+    serializer_class = CollectionSerializer
+# @api_view(['GET', 'PUT', 'DELETE'])
+# def collection_detail(request, pk):
+#     collection = get_object_or_404(Collection.objects.annotate(products_count=Count('products')), pk=pk)
 #     if request.method == 'GET':
-#         # queryset = Collection.objects.prefetch_related('product_set').all()
-#         queryset = Collection.objects.annotate(products_count=Count('products')).all()
-#         serializer = CollectionSerializer(queryset, many=True)
+#         serializer = CollectionSerializer(collection)
 #         return Response(data=serializer.data, status=status.HTTP_200_OK)
-#     elif request.method == 'POST':
-#         serializer = CollectionSerializer(data=request.data)
+#     elif request.method == 'PUT':
+#         serializer = CollectionSerializer(collection, data=request.data)
 #         if serializer.is_valid(raise_exception=True):
 #             serializer.save()
-#             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
-        
-@api_view(['GET', 'PUT', 'DELETE'])
-def collection_detail(request, pk):
-    collection = get_object_or_404(Collection.objects.annotate(products_count=Count('products')), pk=pk)
-    if request.method == 'GET':
-        serializer = CollectionSerializer(collection)
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
-    elif request.method == 'PUT':
-        serializer = CollectionSerializer(collection, data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
-    elif request.method == 'DELETE':
-        if collection.products.count() > 0:
-            return Response({'error': 'This Collection cannot be deleted because it has products'},status=status.HTTP_405_METHOD_NOT_ALLOWED)
-        collection.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+#             return Response(data=serializer.data, status=status.HTTP_200_OK)
+#     elif request.method == 'DELETE':
+#         if collection.products.count() > 0:
+#             return Response({'error': 'This Collection cannot be deleted because it has products'},status=status.HTTP_405_METHOD_NOT_ALLOWED)
+#         collection.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
