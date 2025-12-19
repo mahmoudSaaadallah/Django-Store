@@ -1,3 +1,4 @@
+from rest_framework import generics
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from rest_framework.response import Response
@@ -27,7 +28,7 @@ class ProductDetail(APIView):
         serializer = ProductSerializer(product)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
     
-    def post(self, request, pk):
+    def put(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
         serializer = ProductSerializer(product, request.data)
         if serializer.is_valid(raise_exception=True):
@@ -41,19 +42,38 @@ class ProductDetail(APIView):
         product.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+class CollectionList(generics.ListCreateAPIView):
+    # Here we inheret from ListCreateAPIView class which inheret from generics class and some other mixinx like(mixins.ListModelMixin, mixins.CreateModelMixin).
+    # generics class inherte from the APIView and this class has some Attributes(queryset, serializer_class).
+    # You'll need to either set these attributes,
+    
+    # queryset = Collection.objects.annotate(products_count=Count('products')).all()
+    # serializer_class = CollectionSerializer
+
+    # or override `get_queryset()`/`get_serializer_class()`.
+    # If you are overriding a view method, it is important that you call
+    # `get_queryset()` instead of accessing the `queryset` property directly,
+    # as `queryset` will get evaluated only once, and those results are cached
+    # for all subsequent requests.
+    def get_queryset(self):
+        return Collection.objects.annotate(products_count=Count('products')).all()
+    
+    def get_serializer_class(self):
+        return CollectionSerializer
+
             
-@api_view(['GET', 'POST'])
-def collection_list(request):
-    if request.method == 'GET':
-        # queryset = Collection.objects.prefetch_related('product_set').all()
-        queryset = Collection.objects.annotate(products_count=Count('products')).all()
-        serializer = CollectionSerializer(queryset, many=True)
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
-    elif request.method == 'POST':
-        serializer = CollectionSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+# @api_view(['GET', 'POST'])
+# def collection_list(request):
+#     if request.method == 'GET':
+#         # queryset = Collection.objects.prefetch_related('product_set').all()
+#         queryset = Collection.objects.annotate(products_count=Count('products')).all()
+#         serializer = CollectionSerializer(queryset, many=True)
+#         return Response(data=serializer.data, status=status.HTTP_200_OK)
+#     elif request.method == 'POST':
+#         serializer = CollectionSerializer(data=request.data)
+#         if serializer.is_valid(raise_exception=True):
+#             serializer.save()
+#             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
         
 @api_view(['GET', 'PUT', 'DELETE'])
 def collection_detail(request, pk):
