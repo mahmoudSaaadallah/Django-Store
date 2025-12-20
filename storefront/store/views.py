@@ -1,11 +1,12 @@
+from rest_framework.viewsets import ModelViewSet
 from rest_framework import generics
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
-from .models import Product, Collection
-from .serializers import ProductSerializer, CollectionSerializer
+from .models import Product, Collection, Review
+from .serializers import ProductSerializer, CollectionSerializer, ReviewSerializer
 from django.db.models.aggregates import Count
 from rest_framework.views import APIView
 # Create your views here.
@@ -72,3 +73,16 @@ class CollectionDetail(generics.RetrieveUpdateDestroyAPIView):
             return Response({'error': 'Collection contains products'},status=status.HTTP_405_METHOD_NOT_ALLOWED)
         collection.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class ReviewViewSet(ModelViewSet):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+    def get_queryset(self):
+        return self.queryset.filter(product_id=self.kwargs['product_pk'])
+    
+    def perform_create(self, serializer):
+        product = get_object_or_404(Product, pk=self.kwargs['product_pk'])
+        serializer.save(product=product)
+
+    

@@ -1,6 +1,6 @@
 from decimal import Decimal
 from rest_framework import serializers
-from .models import Collection, Product
+from .models import Collection, Product, Review
 
 
 
@@ -41,3 +41,7 @@ class ProductSerializer(serializers.ModelSerializer):
         # Also we used round to round the result to only two degits.
         return round(product.unit_price * Decimal(1.14),2)
     
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = ['id', 'date', 'name', 'description']
