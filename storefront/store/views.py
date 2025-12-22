@@ -11,6 +11,7 @@ from .serializers import ProductSerializer, CollectionSerializer, ReviewSerializ
 from django.db.models.aggregates import Count
 from rest_framework.views import APIView
 from .filters import ProductFilter
+from django.db.models import Q
 # Create your views here.
 
 class ProductViewSet(ModelViewSet):
@@ -33,6 +34,18 @@ class ProductViewSet(ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = ProductFilter
 
+
+    # we could make manual search by override the get_queryset function as following.
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_query = self.request.query_params.get('q')
+        if search_query:
+            search_fields = ['title', 'description', 'collection__title']
+            for field in search_fields:
+                query = Q(title__icontains=search_query) | Q(description__icontains=search_query)
+            queryset = queryset.filter(query)
+        return queryset
+        
     def destory(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
         if product.orderitems.count() > 0:
