@@ -1,3 +1,4 @@
+from django_filters.rest_framework.backends import DjangoFilterBackend
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import generics
 from django.shortcuts import render, get_object_or_404
@@ -9,18 +10,29 @@ from .models import Product, Collection, Review
 from .serializers import ProductSerializer, CollectionSerializer, ReviewSerializer
 from django.db.models.aggregates import Count
 from rest_framework.views import APIView
+from .filters import ProductFilter
 # Create your views here.
 
 class ProductViewSet(ModelViewSet):
-    # queryset = Product.objects.select_related('collection').all()
+    queryset = Product.objects.select_related('collection').all()
     serializer_class = ProductSerializer
     
-    def get_queryset(self):
-        queryset = Product.objects.select_related('collection').all()
-        collection_id = self.request.query_params.get('collection_id')
-        if collection_id:
-            queryset = queryset.filter(collection_id=collection_id)
-        return queryset
+    # As we are going to use the collection_id as a params in the url then we can't override the queryset parameter we have to override the get_queryset function.
+    # we have to know that with the following get_queryset we will filter only with collection_id not anything else.
+    # but if we want to filter with other parameters then we have to specify it in the get_queryset method and that will make the function 
+    # complicated, on the othe hand we could use genereic filter.
+    # generic filter could be appied using django-filter package.
+    # def get_queryset(self):
+    #     queryset = Product.objects.select_related('collection').all()
+    #     collection_id = self.request.query_params.get('collection_id')
+    #     if collection_id:
+    #         queryset = queryset.filter(collection_id=collection_id)
+    #     return queryset
+
+    # so instead of override the get_query set to add filters we could use django-filter as the following.
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ProductFilter
+
     def destory(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
         if product.orderitems.count() > 0:

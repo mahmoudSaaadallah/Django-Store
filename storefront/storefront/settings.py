@@ -37,12 +37,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_filters',
     'rest_framework',
     'playground',
     "debug_toolbar",
     'store',
     'tags',
-    'likes'
+    'likes',
+
 ]
 import mimetypes
 mimetypes.add_type("application/javascript", ".js", True)
