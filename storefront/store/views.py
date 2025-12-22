@@ -12,8 +12,15 @@ from rest_framework.views import APIView
 # Create your views here.
 
 class ProductViewSet(ModelViewSet):
-    queryset = Product.objects.select_related('collection').all()
+    # queryset = Product.objects.select_related('collection').all()
     serializer_class = ProductSerializer
+    
+    def get_queryset(self):
+        queryset = Product.objects.select_related('collection').all()
+        collection_id = self.request.query_params.get('collection_id')
+        if collection_id:
+            queryset = queryset.filter(collection_id=collection_id)
+        return queryset
     def destory(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
         if product.orderitems.count() > 0:
