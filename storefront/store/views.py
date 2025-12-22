@@ -1,4 +1,5 @@
 from django_filters.rest_framework.backends import DjangoFilterBackend
+from rest_framework.filters import SearchFilter
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import generics
 from django.shortcuts import render, get_object_or_404
@@ -31,20 +32,22 @@ class ProductViewSet(ModelViewSet):
     #     return queryset
 
     # so instead of override the get_query set to add filters we could use django-filter as the following.
-    filter_backends = [DjangoFilterBackend]
+    # here we add the searchfilter class to use it search about the product
+    filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_class = ProductFilter
+    search_fields = ['title', 'description']
 
 
     # we could make manual search by override the get_queryset function as following.
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        search_query = self.request.query_params.get('q')
-        if search_query:
-            search_fields = ['title', 'description', 'collection__title']
-            for field in search_fields:
-                query = Q(title__icontains=search_query) | Q(description__icontains=search_query)
-            queryset = queryset.filter(query)
-        return queryset
+    # def get_queryset(self):
+    #     queryset = super().get_queryset()
+    #     search_query = self.request.query_params.get('q')
+    #     if search_query:
+    #         search_fields = ['title', 'description', 'collection__title']
+    #         for field in search_fields:
+    #             query = Q(title__icontains=search_query) | Q(description__icontains=search_query)
+    #         queryset = queryset.filter(query)
+    #     return queryset
         
     def destory(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
