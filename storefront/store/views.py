@@ -51,7 +51,7 @@ class ProductViewSet(ModelViewSet):
     #         queryset = queryset.filter(query)
     #     return queryset
         
-    def destory(self, request, pk):
+    def destroy(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
         if product.orderitems.count() > 0:
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
