@@ -1,3 +1,4 @@
+from uuid import uuid4
 from django.db import models
 
 # Create your models here.
@@ -74,12 +75,17 @@ class Address(models.Model):
     zip = models.PositiveIntegerField()
     Customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
 class Cart(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4)
     created_at = models.DateTimeField(auto_now_add=True)
 
-class CarItem(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
+
+    class Meta:
+        # Here the unique_together in the Meta class to make sure that each cart has the same product just once and if we try to add it again it will increse the quantity not adding it again.
+        unique_together = [['cart', 'product']]
 
 
 class Review(models.Model):
