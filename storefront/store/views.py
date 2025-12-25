@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
 from .models import Product, Collection, Review, Cart, CartItem
-from .serializers import ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer, CartItemSerializer
+from .serializers import ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer, CartItemSerializer, AddingItemSerializer
 from django.db.models.aggregates import Count
 from rest_framework.views import APIView
 from .filters import ProductFilter
@@ -123,7 +123,13 @@ class CartViewSet(CreateModelMixin, RetrieveModelMixin,GenericViewSet, DestroyMo
 
 
 class CartItemViewSet(ModelViewSet):
-    serializer_class = CartItemSerializer
 
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return AddingItemSerializer
+        else:
+            return CartItemSerializer
+    def get_serializer_context(self):
+        return {'cart_id':self.kwargs['cart_pk']}
     def get_queryset(self):
         return CartItem.objects.select_related('cart').select_related('product').filter(cart_id=self.kwargs['cart_pk'])    

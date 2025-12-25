@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator
 from uuid import uuid4
 from django.db import models
 
@@ -81,7 +82,7 @@ class Cart(models.Model):
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()
+    quantity = models.PositiveIntegerField(validators=[MinValueValidator(1)])
 
     class Meta:
         # Here the unique_together in the Meta class to make sure that each cart has the same product just once and if we try to add it again it will increse the quantity not adding it again.
