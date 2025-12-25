@@ -1,5 +1,5 @@
 from django_filters.rest_framework.backends import DjangoFilterBackend
-from rest_framework.filters import SearchFilter
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import generics
 from django.shortcuts import render, get_object_or_404
@@ -33,9 +33,10 @@ class ProductViewSet(ModelViewSet):
 
     # so instead of override the get_query set to add filters we could use django-filter as the following.
     # here we add the searchfilter class to use it search about the product
-    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = ProductFilter
     search_fields = ['title', 'description']
+    ordering_fields = ['unit_price', 'last_update']
 
 
     # we could make manual search by override the get_queryset function as following.
