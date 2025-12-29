@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.validators import MinValueValidator
 from uuid import uuid4
 from django.db import models
@@ -38,20 +39,18 @@ class Customer(models.Model):
         ('S', 'Silver'),
         ('G', 'Gold'),
     ]
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
-    email = models.EmailField(unique=True)
     phone = models.CharField(max_length=255)
     birth_date = models.DateField(null=True)
     membership = models.CharField(max_length=1, choices=MEMBERSHIP_CHOICES, default=MEMBERSHIP_BRONZE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        return f"{self.user.first_name} {self.user.last_name}"
 
     class Meta:
         db_table = 'store_customers'
         indexes = [
-            models.Index(fields=['last_name', 'first_name'])
+            models.Index(fields=['user__last_name', 'user__first_name'])
         ]
 
 
