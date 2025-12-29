@@ -1,6 +1,8 @@
 from django.contrib import admin
 from . import models
 from django.db.models.aggregates import Count
+from django.contrib.auth.admin import UserAdmin as UserAdminBase
+from core.models import User
 # Register your models here.
 
 # This is how to register our models in the admin site to enable us to see them in the admin site
@@ -54,3 +56,15 @@ class CollectionAdmin(admin.ModelAdmin):
         return super().get_queryset(request).annotate(
             products_count=Count('products')
         )
+    
+@admin.register(User)
+class UserAdmin(UserAdminBase):
+    add_fieldsets = (
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": ("username", "usable_password", "password1", "password2", 'email', 'first_name', 'last_name'),
+            },
+        ),
+    )
