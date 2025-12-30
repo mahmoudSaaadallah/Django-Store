@@ -1,7 +1,7 @@
 from django_filters.rest_framework.backends import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin, UpdateModelMixin
 from rest_framework import generics
@@ -22,13 +22,14 @@ from .serializers import (ProductSerializer,
 from django.db.models.aggregates import Count
 from rest_framework.views import APIView
 from .filters import ProductFilter
+from .premissions import IsAdminOrReadOnly
 from django.db.models import Q
 # Create your views here.
 
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.select_related('collection').all()
     serializer_class = ProductSerializer
-    
+    permission_classes = [IsAdminOrReadOnly]
     # As we are going to use the collection_id as a params in the url then we can't override the queryset parameter we have to override the get_queryset function.
     # we have to know that with the following get_queryset we will filter only with collection_id not anything else.
     # but if we want to filter with other parameters then we have to specify it in the get_queryset method and that will make the function 
@@ -70,6 +71,8 @@ class ProductViewSet(ModelViewSet):
 class CollectionViewSet(ModelViewSet):
     queryset = Collection.objects.annotate(products_count=Count('products')).all()
     serializer_class = CollectionSerializer
+
+    permission_classes = [IsAdminOrReadOnly]
     def destroy(self, request, pk):
         collection = get_object_or_404(Collection, pk=pk)
         if collection.products.count() > 0:
@@ -147,16 +150,16 @@ class CartItemViewSet(ModelViewSet):
         return CartItem.objects.select_related('cart').select_related('product').filter(cart_id=self.kwargs['cart_pk'])    
 
 
-class CustomerViewSet(CreateModelMixin, RetrieveModelMixin, UpdateModelMixin, GenericViewSet):
+class CustomerViewSet(ModelViewSet):
     queryset = Customer.objects.select_related('user').all()
     serializer_class = CustomerSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminUser]
     
     def get_permissions(self):
         if self.request.method == 'GET':
             return [AllowAny()]
         return [IsAuthenticated()]
-    @action(detail=False, methods=['GET', 'PUT'])
+    @action(detail=False, methods=['GET', 'PUT'], permission_classes=[IsAuthenticated])
     def me(self, request):
         if request.method == 'GET':
             (customer, created)  = Customer.objects.get_or_create(user_id=request.user.id)
